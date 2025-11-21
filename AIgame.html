@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>创意游戏平台 - 百万奖金争霸赛 (本地增强版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* --- 核心商业风格定义 --- */
+      body {
+        background-color: #050505;
+        color: #ffffff;
+        font-family: "Microsoft YaHei", sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* 土豪金渐变字 */
+      .gold-text {
+        background: linear-gradient(to bottom, #fffebb, #eebc34, #b67e04);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 2px 0px rgba(0, 0, 0, 0.5);
+      }
+
+      /* 霓虹发光字 */
+      .neon-glow {
+        text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 40px #ff00de;
+        color: #fff;
+      }
+
+      /* 动态背景 */
+      .money-bg {
+        background-image: radial-gradient(circle, #333 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: #000;
+      }
+
+      /* 滚动弹幕容器 */
+      .marquee-container {
+        background: linear-gradient(90deg, #000, #991b1b, #000);
+        border-top: 1px solid #ef4444;
+        border-bottom: 1px solid #ef4444;
+      }
+
+      /* 卡片高级质感 */
+      .vip-card {
+        background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+        border: 1px solid #333;
+        transition: all 0.3s ease;
+      }
+      .vip-card:hover {
+        border-color: #eebc34;
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px -5px rgba(238, 188, 52, 0.3);
+        z-index: 10;
+      }
+
+      /* 排行榜金银铜 */
+      .rank-1 {
+        color: #ffd700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      }
+      .rank-2 {
+        color: #c0c0c0;
+      }
+      .rank-3 {
+        color: #cd7f32;
+      }
+
+      /* 滚动条 */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #000;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #b67e04;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col h-screen money-bg">
+    <nav
+      class="h-20 bg-black border-b border-yellow-600/50 flex items-center justify-between px-6 z-50 shrink-0 shadow-[0_0_20px_rgba(255,215,0,0.2)] relative"
+    >
+      <div class="flex items-center gap-4">
+        <div class="relative group cursor-pointer">
+          <i
+            class="fa-solid fa-rocket text-5xl text-red-500 absolute -top-8 -left-6 transform -rotate-12 group-hover:rotate-0 transition"
+          ></i>
+          <h1 class="text-4xl font-black italic gold-text tracking-tighter">
+            创意游戏平台
+          </h1>
+        </div>
+        <div class="hidden md:flex flex-col ml-4">
+          <span class="text-[10px] text-yellow-600 tracking-[0.2em] uppercase"
+            >Unleash Your Game Idea</span
+          >
+          <span
+            class="text-xs text-white font-bold bg-red-600 px-2 rounded animate-pulse"
+            >全网收益分红 NO.1</span
+          >
+        </div>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <div class="text-right hidden md:block">
+          <div class="text-xs text-gray-400">当前奖池余额</div>
+          <div class="text-yellow-400 font-mono font-bold text-xl">
+            ¥ <span id="nav-money">88,888,888</span>
+          </div>
+        </div>
+        <button
+          class="bg-gradient-to-r from-yellow-600 to-yellow-400 hover:from-yellow-500 hover:to-yellow-300 text-black font-bold px-6 py-2 rounded-full shadow-[0_0_15px_gold] transform hover:scale-105 transition"
+        >
+          <i class="fa-solid fa-wallet mr-2"></i> 提现
+        </button>
+      </div>
+    </nav>
+
+    <div
+      class="marquee-container h-8 flex items-center overflow-hidden relative shrink-0 z-40"
+    >
+      <div
+        class="whitespace-nowrap animate-[marquee_20s_linear_infinite] text-xs font-bold text-white flex gap-12"
+      >
+        <span>🚀 恭喜用户 [王**] 刚刚在《虚空狙击》提现 ¥50,000</span>
+        <span>💎 创作者 [GodHand] 昨日分红 ¥124,590</span>
+        <span>🔥 游戏《赛博猫咪》热度突破 1,000,000</span>
+        <span>💰 本周总奖池已累计至 8 千万，点击即玩！</span>
+        <span>🎰 新用户注册送 ¥888 试玩金</span>
+      </div>
+    </div>
+
+    <div class="flex flex-1 overflow-hidden relative">
+      <aside
+        class="w-64 bg-neutral-900 hidden lg:flex flex-col border-r border-white/10 shrink-0 relative overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"
+        ></div>
+        <div class="p-6 relative z-10">
+          <h3
+            class="text-yellow-600 text-xs font-bold uppercase tracking-widest mb-6"
+          >
+            Game Zone
+          </h3>
+          <nav class="space-y-2">
+            <button
+              onclick="filterGames('all')"
+              class="w-full text-left px-4 py-3 rounded-lg bg-gradient-to-r from-yellow-900/50 to-transparent border-l-4 border-yellow-500 text-white font-bold hover:brightness-150 transition shadow-lg"
+            >
+              <i class="fa-solid fa-infinity w-8 text-yellow-500"></i> 全部游戏
+            </button>
+            <button
+              onclick="filterGames('Action')"
+              class="w-full text-left px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition border-l-4 border-transparent hover:border-red-500"
+            >
+              <i class="fa-solid fa-bomb w-8"></i> 动作射击
+            </button>
+            <button
+              onclick="filterGames('RPG')"
+              class="w-full text-left px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition border-l-4 border-transparent hover:border-purple-500"
+            >
+              <i class="fa-solid fa-dragon w-8"></i> RPG 冒险
+            </button>
+            <button
+              onclick="filterGames('Sim')"
+              class="w-full text-left px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition border-l-4 border-transparent hover:border-green-500"
+            >
+              <i class="fa-solid fa-sack-dollar w-8"></i> 模拟经营
+            </button>
+            <button
+              onclick="filterGames('Puzzle')"
+              class="w-full text-left px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition border-l-4 border-transparent hover:border-blue-500"
+            >
+              <i class="fa-solid fa-brain w-8"></i> 脑力解谜
+            </button>
+          </nav>
+        </div>
+
+        <div class="mt-auto p-4 relative z-10">
+          <div
+            class="bg-gradient-to-b from-red-900 to-black border border-red-600 rounded-xl p-4 text-center"
+          >
+            <div class="text-red-500 font-bold text-lg mb-1 animate-pulse">
+              🔥 创作者招募
+            </div>
+            <p class="text-xs text-red-200 mb-3">上传创意，AI 生成新游戏！</p>
+            <button
+              onclick="openCreatorModal()"
+              class="w-full bg-red-600 text-white font-bold text-xs py-2 rounded hover:bg-red-500"
+            >
+              立即加入
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <main
+        class="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth relative"
+        id="main-area"
+      >
+        <div
+          class="bg-gradient-to-r from-yellow-900 via-black to-yellow-900 rounded-2xl p-8 mb-8 border border-yellow-600/30 relative overflow-hidden shadow-[0_0_50px_rgba(255,215,0,0.1)]"
+        >
+          <div class="relative z-10 text-center">
+            <h2
+              class="text-yellow-500 text-sm font-bold tracking-[0.5em] uppercase mb-2"
+            >
+              本周全站累计奖池
+            </h2>
+            <div
+              class="text-6xl md:text-8xl font-black text-white drop-shadow-[0_5px_5px_rgba(0,0,0,1)]"
+            >
+              ¥ <span id="jackpot-main">88,888,888</span>
+            </div>
+            <div class="mt-4 flex justify-center gap-4">
+              <span
+                class="bg-black/50 px-3 py-1 rounded text-xs text-gray-300 border border-white/10"
+                >🏆 榜首分红: ¥26,666,666</span
+              >
+              <span
+                class="bg-black/50 px-3 py-1 rounded text-xs text-gray-300 border border-white/10"
+                >⏳ 结算倒计时: 02天 14:00</span
+              >
+            </div>
+          </div>
+          <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-500/20 via-transparent to-transparent blur-3xl pointer-events-none"
+          ></div>
+        </div>
+
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-white">
+            <i class="fa-solid fa-gamepad text-yellow-500 mr-2"></i> 热门游戏
+            (<span id="game-count">20</span>)
+          </h2>
+          <div class="flex gap-2">
+            <span class="text-xs text-gray-500 self-end">按热度排序 ▼</span>
+          </div>
+        </div>
+
+        <div
+          id="game-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20"
+        ></div>
+      </main>
+    </div>
+
+    <div
+      id="play-modal"
+      class="fixed inset-0 z-[100] hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-4"
+    >
+      <div
+        class="w-full max-w-[1400px] h-[90vh] bg-[#0a0a0a] border border-yellow-600/30 rounded-2xl overflow-hidden flex shadow-[0_0_100px_rgba(255,215,0,0.1)]"
+      >
+        <div class="flex-1 flex flex-col relative">
+          <div
+            class="h-16 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-6"
+          >
+            <div>
+              <h2 id="play-title" class="text-xl font-bold text-yellow-500">
+                Game Title
+              </h2>
+              <span class="text-xs text-gray-500">Win Big, Play Hard</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2 text-yellow-500/50">
+                <i class="fa-solid fa-eye"></i>
+                <span id="view-count">12,405</span> 在玩
+              </div>
+              <button
+                onclick="closeGame()"
+                class="w-8 h-8 rounded bg-white/10 hover:bg-red-600 text-white transition flex items-center justify-center"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="game-viewport"
+            class="flex-1 bg-black relative flex items-center justify-center overflow-hidden"
+          ></div>
+        </div>
+
+        <div
+          class="w-80 bg-[#111] border-l border-white/10 flex flex-col shrink-0"
+        >
+          <div
+            class="p-5 bg-gradient-to-b from-yellow-900/20 to-transparent border-b border-white/5"
+          >
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-trophy text-yellow-500"></i> 荣耀富豪榜
+            </h3>
+            <p class="text-xs text-yellow-600/80 mt-1">Top Players This Week</p>
+          </div>
+
+          <div
+            id="lb-list"
+            class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll"
+          ></div>
+
+          <div class="p-4 bg-neutral-900 border-t border-white/10">
+            <div class="text-xs text-gray-500 mb-1">YOUR BEST SCORE</div>
+            <div class="flex justify-between items-center">
+              <span
+                class="text-2xl font-mono font-bold text-white"
+                id="my-best-score"
+                >--</span
+              >
+              <span
+                class="px-2 py-1 rounded bg-yellow-600/20 text-yellow-500 text-xs font-bold"
+                >未上榜</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="creator-modal"
+      class="fixed inset-0 z-[100] hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-4"
+    >
+      <div
+        class="w-full max-w-2xl bg-[#0a0a0a] border border-red-600/30 rounded-2xl p-8 shadow-[0_0_80px_rgba(255,0,0,0.1)]"
+      >
+        <h2 class="text-3xl font-black neon-glow mb-4 text-center">
+          AI 创意游戏生成器
+        </h2>
+        <p class="text-sm text-gray-400 mb-6 text-center">
+          输入您的创意玩法，AI Agent
+          将自动生成游戏前端代码并添加到您的本地平台。
+        </p>
+
+        <label for="game-name" class="text-yellow-500 font-bold mb-2 block"
+          >一句话生成你的游戏:</label
+        >
+        <input
+          type="text"
+          id="game-name"
+          class="w-full bg-neutral-900 border border-red-700/50 rounded p-4 text-white placeholder-gray-600 focus:border-yellow-500 outline-none transition"
+          placeholder="例如：极速霓虹跑者"
+        />
+
+        <label for="game-type" class="text-yellow-500 font-bold mt-4 mb-2 block"
+          >游戏核心玩法类型:</label
+        >
+        <select
+          id="game-type"
+          class="w-full bg-neutral-900 border border-red-700/50 rounded p-4 text-white focus:border-yellow-500 outline-none transition"
+        >
+          <option value="Action">动作射击 (打地鼠类)</option>
+          <option value="RPG">RPG 冒险 (文字抉择类)</option>
+          <option value="Sim">模拟经营 (点击挖矿类)</option>
+          <option value="Puzzle">脑力解谜 (速算类)</option>
+        </select>
+
+        <label for="game-idea" class="text-yellow-500 font-bold mt-4 mb-2 block"
+          >玩法创意描述 (用于 AI 学习):</label
+        >
+        <textarea
+          id="game-idea"
+          rows="2"
+          class="w-full bg-neutral-900 border border-red-700/50 rounded p-4 text-white placeholder-gray-600 focus:border-yellow-500 outline-none transition"
+          placeholder="描述您的游戏核心机制，例如：一个关于赛博朋克城市跑酷的点击类游戏..."
+        ></textarea>
+
+        <button
+          onclick="submitGameIdea()"
+          class="w-full mt-6 bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-lg shadow-[0_0_20px_red] transition transform active:scale-95"
+        >
+          <i class="fa-solid fa-magic mr-2 animate-pulse"></i> 提交创意，启动 AI
+          Agent
+        </button>
+
+        <div
+          id="ai-status"
+          class="mt-4 text-center text-sm text-yellow-500 font-bold hidden"
+        >
+          <i class="fa-solid fa-spinner fa-spin mr-2"></i> 正在生成代码...
+          请稍候！
+        </div>
+
+        <button
+          onclick="closeCreatorModal()"
+          class="mt-4 text-xs text-gray-500 hover:text-white block w-full"
+        >
+          关闭
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // --- 原始游戏数据 (扩展到 20 个) ---
+      const initialGames = [
+        {
+          id: "g01",
+          title: "赛博猫咪 2077",
+          type: "Action",
+          likes: "99.9k",
+          author: "NeoCat",
+          img: "https://images.unsplash.com/photo-1615751072497-5f5169febe33?w=600&h=400&q=80",
+        },
+        {
+          id: "g02",
+          title: "量子地下城",
+          type: "RPG",
+          likes: "88.5k",
+          author: "DarkSoul",
+          img: "https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?w=600&h=400&q=80",
+        },
+        {
+          id: "g03",
+          title: "火星殖民计划",
+          type: "Sim",
+          likes: "76.2k",
+          author: "Elon_AI",
+          img: "https://images.unsplash.com/photo-1614728853913-1e3258af70ad?w=600&h=400&q=80",
+        },
+        {
+          id: "g04",
+          title: "虚空狙击手",
+          type: "Action",
+          likes: "65.4k",
+          author: "SniperX",
+          img: "https://images.unsplash.com/photo-1542259681-d2937979878a?w=600&h=400&q=80",
+        },
+        {
+          id: "g05",
+          title: "炼金术士的迷宫",
+          type: "Puzzle",
+          likes: "54.1k",
+          author: "Magic",
+          img: "https://images.unsplash.com/photo-1515523110800-9415d13b84a8?w=600&h=400&q=80",
+        },
+        {
+          id: "g06",
+          title: "深海恐惧",
+          type: "RPG",
+          likes: "48.9k",
+          author: "Cthulhu",
+          img: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=600&h=400&q=80",
+        },
+        {
+          id: "g07",
+          title: "黑客帝国：矩阵",
+          type: "Puzzle",
+          likes: "42.3k",
+          author: "ZeroOne",
+          img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&h=400&q=80",
+        },
+        {
+          id: "g08",
+          title: "霓虹极速赛车",
+          type: "Action",
+          likes: "39.7k",
+          author: "Speedy",
+          img: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=600&h=400&q=80",
+        },
+        {
+          id: "g09",
+          title: "比特币大亨",
+          type: "Sim",
+          likes: "35.2k",
+          author: "Satoshi",
+          img: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&h=400&q=80",
+        },
+        {
+          id: "g10",
+          title: "像素大逃杀",
+          type: "Action",
+          likes: "31.8k",
+          author: "PixelGun",
+          img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&h=400&q=80",
+        },
+        {
+          id: "g11",
+          title: "修仙模拟器",
+          type: "RPG",
+          likes: "28.4k",
+          author: "Taoist",
+          img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&h=400&q=80",
+        },
+        {
+          id: "g12",
+          title: "病毒进化",
+          type: "Sim",
+          likes: "26.1k",
+          author: "BioLab",
+          img: "https://images.unsplash.com/photo-1584036561566-b4631f59ccc5?w=600&h=400&q=80",
+        },
+        {
+          id: "g13",
+          title: "后室 (Backrooms) 探险",
+          type: "RPG",
+          likes: "24.5k",
+          author: "Liminal",
+          img: "https://images.unsplash.com/photo-1605806616949-1e87b487bc2a?w=600&h=400&q=80",
+        },
+        {
+          id: "g14",
+          title: "数独终结者",
+          type: "Puzzle",
+          likes: "22.9k",
+          author: "Logic",
+          img: "https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?w=600&h=400&q=80",
+        },
+        {
+          id: "g15",
+          title: "机甲风暴 3000",
+          type: "Action",
+          likes: "20.4k",
+          author: "Gundam",
+          img: "https://images.unsplash.com/photo-1626263107421-46c8f8d11568?w=600&h=400&q=80",
+        },
+        {
+          id: "g16",
+          title: "蚂蚁帝国",
+          type: "Sim",
+          likes: "18.7k",
+          author: "QueenAnt",
+          img: "https://images.unsplash.com/photo-1455970022149-a8f26b6902dd?w=600&h=400&q=80",
+        },
+        {
+          id: "g17",
+          title: "恋爱模拟器 X",
+          type: "RPG",
+          likes: "16.2k",
+          author: "LoveBot",
+          img: "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=600&h=400&q=80",
+        },
+        {
+          id: "g18",
+          title: "逻辑电路大师",
+          type: "Puzzle",
+          likes: "15.8k",
+          author: "Engineer",
+          img: "https://images.unsplash.com/photo-1517077304055-6e89abbec40b?w=600&h=400&q=80",
+        },
+        {
+          id: "g19",
+          title: "疯狂点击大亨",
+          type: "Sim",
+          likes: "14.5k",
+          author: "Clicker",
+          img: "https://images.unsplash.com/photo-1610389244180-73769442e6b6?w=600&h=400&q=80",
+        },
+        {
+          id: "g20",
+          title: "颜色工厂",
+          type: "Puzzle",
+          likes: "12.1k",
+          author: "Hue",
+          img: "https://images.unsplash.com/photo-1502691876148-a84978e59af8?w=600&h=400&q=80",
+        },
+      ];
+
+      let gamesData = [...initialGames]; // 组合初始和本地游戏
+
+      // 类型配置：不同颜色
+      const typeConfig = {
+        Action: { color: "text-red-500", border: "border-red-500" },
+        RPG: { color: "text-purple-500", border: "border-purple-500" },
+        Sim: { color: "text-green-500", border: "border-green-500" },
+        Puzzle: { color: "text-blue-500", border: "border-blue-500" },
+        AI: { color: "text-pink-500", border: "border-pink-500" },
+      };
+
+      // --- 本地存储逻辑 (核心功能) ---
+      const Storage = {
+        // 获取某游戏排行榜
+        get(gameId) {
+          const data = localStorage.getItem(`afa_gold_${gameId}`);
+          if (data) return JSON.parse(data);
+          // 假数据填充
+          return [
+            { name: "RichGuy", score: 10000 },
+            { name: "ProGamer", score: 8500 },
+            { name: "Winner", score: 5000 },
+            { name: "LuckyDog", score: 2000 },
+            { name: "User007", score: 500 },
+          ];
+        },
+        // 保存得分
+        save(gameId, name, score) {
+          const list = this.get(gameId);
+          list.push({ name: name || "神秘土豪", score: score });
+          list.sort((a, b) => b.score - a.score); // 降序
+          localStorage.setItem(
+            `afa_gold_${gameId}`,
+            JSON.stringify(list.slice(0, 50))
+          ); // 只存前50
+        },
+        // 获取本地生成的游戏列表
+        getLocallyGeneratedGames() {
+          const data = localStorage.getItem("afa_local_games");
+          return data ? JSON.parse(data) : [];
+        },
+        // 保存本地生成的新游戏
+        saveLocallyGeneratedGame(game) {
+          const localGames = this.getLocallyGeneratedGames();
+          localGames.push(game);
+          localStorage.setItem("afa_local_games", JSON.stringify(localGames));
+        },
+      };
+
+      // --- 渲染游戏列表 ---
+      function renderGames(filter = "all") {
+        const grid = document.getElementById("game-grid");
+        grid.innerHTML = "";
+
+        // 每次渲染都重新组合数据 (初始游戏 + 本地生成游戏)
+        gamesData = [...initialGames, ...Storage.getLocallyGeneratedGames()];
+
+        const filtered =
+          filter === "all"
+            ? gamesData
+            : gamesData.filter((g) => g.type === filter);
+        document.getElementById("game-count").innerText = filtered.length;
+
+        filtered.forEach((game) => {
+          const tc = typeConfig[game.type] || typeConfig["Sim"];
+          const card = document.createElement("div");
+          card.className =
+            "vip-card rounded-xl overflow-hidden relative group cursor-pointer";
+          card.onclick = () => openGame(game);
+
+          const isLocal = game.author === "AI Agent";
+          const liveTag = isLocal
+            ? `<div class="absolute top-2 left-2 bg-black/80 backdrop-blur px-2 py-1 rounded border border-pink-500/30 text-[10px] font-bold text-white flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span> AI 生成
+                    </div>`
+            : `<div class="absolute top-2 left-2 bg-black/80 backdrop-blur px-2 py-1 rounded border border-yellow-500/30 text-[10px] font-bold text-white flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> LIVE
+                    </div>`;
+
+          card.innerHTML = `
+                    <div class="h-40 overflow-hidden relative">
+                        <img src="${game.img}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 group-hover:brightness-110" alt="${game.title}">
+                        ${liveTag}
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black/40">
+                            <div class="w-14 h-14 rounded-full bg-yellow-500 flex items-center justify-center text-black shadow-[0_0_20px_gold] transform scale-0 group-hover:scale-100 transition delay-100">
+                                <i class="fa-solid fa-play text-2xl ml-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-[10px] ${tc.color} font-bold mb-1 tracking-wider uppercase">${game.type}</div>
+                        <h3 class="text-white font-bold text-base truncate group-hover:text-yellow-400 transition">${game.title}</h3>
+                        <div class="flex justify-between items-center mt-3 pt-3 border-t border-white/10">
+                            <span class="text-xs text-gray-500">by ${game.author}</span>
+                            <span class="text-xs font-mono text-yellow-500 font-bold"><i class="fa-solid fa-heart"></i> ${game.likes}</span>
+                        </div>
+                    </div>
+                `;
+          grid.appendChild(card);
+        });
+      }
+
+      function filterGames(t) {
+        renderGames(t);
+      }
+
+      // --- 游戏弹窗与排行榜渲染 (逻辑不变) ---
+      let activeGame = null;
+      let gameInterval = null;
+
+      function openGame(game) {
+        activeGame = game;
+        document.getElementById("play-title").innerText = game.title;
+        document.getElementById("play-modal").classList.remove("hidden");
+        document.getElementById("view-count").innerText = (
+          Math.random() * 50000 +
+          10000
+        )
+          .toFixed(0)
+          .toLocaleString();
+
+        renderLeaderboardUI(game.id);
+        showStartScreen(game);
+      }
+
+      function closeGame() {
+        document.getElementById("play-modal").classList.add("hidden");
+        if (gameInterval) clearInterval(gameInterval);
+      }
+
+      function renderLeaderboardUI(gameId) {
+        const list = Storage.get(gameId);
+        const container = document.getElementById("lb-list");
+        container.innerHTML = "";
+
+        list.forEach((item, idx) => {
+          let rankClass = "text-gray-400";
+          if (idx === 0) rankClass = "rank-1";
+          if (idx === 1) rankClass = "rank-2";
+          if (idx === 2) rankClass = "rank-3";
+
+          const row = document.createElement("div");
+          row.className = `flex justify-between items-center p-3 rounded hover:bg-white/5 border-b border-white/5 transition`;
+          row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="font-black w-6 text-center text-lg ${rankClass}">${
+            idx + 1
+          }</span>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-gray-200 truncate w-24">${
+                              item.name
+                            }</span>
+                        </div>
+                    </div>
+                    <span class="font-mono font-bold text-yellow-500">${item.score.toLocaleString()}</span>
+                `;
+          container.appendChild(row);
+        });
+
+        // 更新个人最佳（简单取第一名模拟展示）
+        if (list.length > 0) {
+          document.getElementById("my-best-score").innerText =
+            list[0].score.toLocaleString();
+        }
+      }
+
+      // --- 游戏引擎逻辑 (与原代码一致) ---
+      function showStartScreen(game) {
+        const vp = document.getElementById("game-viewport");
+        vp.innerHTML = `
+                <div class="text-center z-10 animate-[zoomIn_0.4s_ease-out]">
+                    <h1 class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500 mb-2 uppercase italic">${game.title}</h1>
+                    <p class="text-yellow-500 font-bold mb-8 tracking-[0.5em] text-sm">WIN BIG OR GO HOME</p>
+                    <button onclick="startGameEngine()" class="bg-gradient-to-r from-yellow-600 to-yellow-400 hover:from-yellow-500 hover:to-yellow-300 text-black px-12 py-4 rounded-full font-black text-2xl shadow-[0_0_40px_rgba(255,215,0,0.5)] transform hover:scale-110 transition active:scale-95">
+                        START GAME
+                    </button>
+                </div>
+                <div class="absolute inset-0 bg-[url('${game.img}')] bg-cover bg-center opacity-30 blur-sm"></div>
+            `;
+      }
+
+      function startGameEngine() {
+        const vp = document.getElementById("game-viewport");
+        const type = activeGame.type;
+
+        if (type === "Action") runActionGame(vp);
+        else if (type === "RPG") runRPGGame(vp);
+        else if (type === "Puzzle") runPuzzleGame(vp);
+        else runClickerGame(vp);
+      }
+
+      // 4个游戏内核 (保持原逻辑)
+      function runActionGame(container) {
+        let score = 0;
+        let timeLeft = 5;
+        container.innerHTML = `
+                <div class="absolute top-4 left-4 text-white text-2xl font-black italic shadow-black drop-shadow-md">SCORE: <span id="g-score" class="text-yellow-400">0</span></div>
+                <div class="absolute top-4 right-4 text-white text-2xl font-black italic shadow-black drop-shadow-md">TIME: <span id="g-time" class="text-red-500">5</span></div>
+                <div id="g-area" class="w-full h-full relative cursor-crosshair bg-[#111]"></div>
+            `;
+        const area = document.getElementById("g-area");
+        function spawn() {
+          const t = document.createElement("div");
+          t.className =
+            "absolute w-20 h-20 bg-gradient-to-br from-red-500 to-red-900 rounded-full border-2 border-white shadow-[0_0_30px_red] cursor-pointer flex items-center justify-center text-3xl animate-pulse active:scale-90";
+          t.innerHTML = "🎯";
+          t.style.left = Math.random() * (area.clientWidth - 80) + "px";
+          t.style.top = Math.random() * (area.clientHeight - 80) + "px";
+          t.onmousedown = () => {
+            score += 500;
+            document.getElementById("g-score").innerText =
+              score.toLocaleString();
+            t.remove();
+            spawn();
+          };
+          area.appendChild(t);
+        }
+        spawn();
+        gameInterval = setInterval(() => {
+          timeLeft--;
+          document.getElementById("g-time").innerText = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(gameInterval);
+            showGameOver(container, score);
+          }
+        }, 1000);
+      }
+      function runRPGGame(container) {
+        let score = 0;
+        container.innerHTML = `
+                <div class="max-w-lg w-full bg-neutral-900 border border-yellow-600 p-8 rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center">
+                    <h3 class="text-2xl text-yellow-500 font-bold mb-4">命运抉择</h3>
+                    <div id="rpg-msg" class="h-32 flex items-center justify-center text-gray-300 text-lg mb-6 border bg-black border-white/10 rounded p-4">
+                        你发现了一个神秘的金库...
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="rpgChoice(1000)" class="bg-slate-800 hover:bg-yellow-600 hover:text-black text-white py-3 rounded font-bold transition">强行打开 (+1000)</button>
+                        <button onclick="rpgChoice(500)" class="bg-slate-800 hover:bg-blue-600 hover:text-white text-white py-3 rounded font-bold transition">寻找钥匙 (+500)</button>
+                        <button onclick="finishRPG()" class="col-span-2 bg-red-600 hover:bg-red-500 text-white py-3 rounded font-bold mt-2 shadow-[0_0_15px_red]">带钱跑路 (结算)</button>
+                    </div>
+                </div>
+            `;
+        window.rpgChoice = (pts) => {
+          score += pts;
+          document.getElementById(
+            "rpg-msg"
+          ).innerHTML = `获得价值 <span class="text-yellow-400 font-bold">¥${pts}</span> 的宝藏!<br>当前总额: ¥${score}`;
+        };
+        window.finishRPG = () => showGameOver(container, score);
+      }
+      function runClickerGame(container) {
+        let money = 0;
+        container.innerHTML = `
+                <div class="text-center">
+                    <div class="text-7xl font-black text-yellow-400 drop-shadow-[0_5px_10px_rgba(0,0,0,1)] mb-2">¥<span id="sim-money">0</span></div>
+                    <div class="text-gray-400 text-sm mb-8 uppercase tracking-widest">Tap to Earn</div>
+                    <button id="mine-btn" class="w-40 h-40 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-600 border-8 border-yellow-100 shadow-[0_0_60px_gold] active:scale-90 transition flex items-center justify-center text-6xl">
+                        💎
+                    </button>
+                    <button onclick="finishSim()" class="mt-10 text-gray-500 hover:text-white underline decoration-yellow-500">带着战利品离开</button>
+                </div>
+            `;
+        document.getElementById("mine-btn").onclick = () => {
+          money += Math.floor(Math.random() * 100) + 50;
+          document.getElementById("sim-money").innerText =
+            money.toLocaleString();
+        };
+        window.finishSim = () => showGameOver(container, money);
+      }
+      function runPuzzleGame(container) {
+        let score = 0;
+        function nextQ() {
+          let a = Math.floor(Math.random() * 50),
+            b = Math.floor(Math.random() * 50);
+          container.innerHTML = `
+                    <div class="text-center bg-black/80 p-10 rounded-2xl border border-blue-500/50 shadow-[0_0_30px_blue]">
+                        <div class="text-blue-400 font-bold mb-4 tracking-widest">SECURITY CHECK</div>
+                        <div class="text-5xl font-mono font-bold text-white mb-8">${a} + ${b} = ?</div>
+                        <div class="flex gap-4 justify-center">
+                            <button onclick="ans(false)" class="w-20 h-20 bg-gray-800 hover:bg-red-600 rounded-xl text-2xl font-bold text-white transition">${
+                              a + b - 1
+                            }</button>
+                            <button onclick="ans(true)" class="w-20 h-20 bg-gray-800 hover:bg-green-600 rounded-xl text-2xl font-bold text-white transition">${
+                              a + b
+                            }</button>
+                            <button onclick="ans(false)" class="w-20 h-20 bg-gray-800 hover:bg-red-600 rounded-xl text-2xl font-bold text-white transition">${
+                              a + b + 1
+                            }</button>
+                        </div>
+                    </div>
+                `;
+        }
+        window.ans = (correct) => {
+          if (correct) {
+            score += 1000;
+            nextQ();
+          } else {
+            showGameOver(container, score);
+          }
+        };
+        nextQ();
+      }
+
+      // --- 结算界面 (保持原逻辑) ---
+      function showGameOver(container, score) {
+        container.innerHTML = `
+                <div class="bg-neutral-900 border-2 border-yellow-500 p-8 rounded-2xl text-center max-w-md w-full shadow-[0_0_100px_rgba(255,215,0,0.3)] animate-[bounceIn_0.5s]">
+                    <div class="text-yellow-500 font-black text-3xl mb-2 uppercase italic">CONGRATULATIONS!</div>
+                    <p class="text-gray-400 text-xs mb-6 tracking-widest">YOUR FINAL SCORE</p>
+                    <div class="text-6xl font-black text-white mb-8 neon-glow">${score.toLocaleString()}</div>
+                    
+                    <div class="relative mb-4">
+                        <input type="text" id="player-name" placeholder="输入您的尊贵名讳" class="w-full bg-black border border-yellow-600/50 rounded-lg px-4 py-3 text-center text-white font-bold focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none transition">
+                    </div>
+                    <button onclick="submitScore(${score})" class="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-black py-3 rounded-lg shadow-lg transition transform active:scale-95 uppercase">
+                        领取积分并上榜
+                    </button>
+                    <button onclick="closeGame()" class="mt-4 text-xs text-gray-500 hover:text-white">放弃奖励</button>
+                </div>
+            `;
+      }
+
+      function submitScore(score) {
+        const name = document.getElementById("player-name").value.trim();
+        Storage.save(activeGame.id, name, score);
+        renderLeaderboardUI(activeGame.id);
+        openGame(activeGame); // 回到开始界面
+      }
+
+      // --- 创作者模态框逻辑 (新增) ---
+      function openCreatorModal() {
+        document.getElementById("creator-modal").classList.remove("hidden");
+        document.getElementById("game-name").value = "";
+        document.getElementById("game-type").value = "Action";
+        document.getElementById("ai-idea").value = ""; // 清空描述
+        document.getElementById("ai-status").classList.add("hidden");
+      }
+
+      function closeCreatorModal() {
+        document.getElementById("creator-modal").classList.add("hidden");
+      }
+
+      /**
+       * AI Agent 提交创意逻辑 (修改核心)
+       * - 根据选择的类型，从 initialGames 中随机抽取一个作为“生成结果”。
+       */
+      async function submitGameIdea() {
+        const name = document.getElementById("game-name").value.trim();
+        const type = document.getElementById("game-type").value;
+        const statusDiv = document.getElementById("ai-status");
+
+        if (name.length < 2) {
+          alert("游戏名称至少需要 2 个字符！");
+          return;
+        }
+
+        // 1. 显示状态
+        statusDiv.innerText = `🤖 正在分析创意并生成 ${type} 类游戏... 请稍候！`;
+        statusDiv.classList.remove("hidden");
+
+        // 2. 模拟网络延迟和 AI 处理时间
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // 3. AI 核心逻辑：从预设的同类型游戏中随机抽取一个作为“生成结果”
+        const candidates = initialGames.filter((g) => g.type === type);
+        if (candidates.length === 0) {
+          alert("该类型没有预设游戏可供模拟生成！");
+          statusDiv.classList.add("hidden");
+          return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * candidates.length);
+        const generatedBaseGame = candidates[randomIndex];
+
+        // 4. 生成新游戏数据结构
+        const newGameId = `ai-${Date.now()}`;
+        const newGame = {
+          // 使用用户输入的名称，但保留抽取出的游戏的核心数据和引擎ID
+          id: newGameId,
+          title: name,
+          type: type,
+          likes: "0",
+          author: "AI Agent",
+          // 继承抽取出的游戏的图片，更像“生成”了一个新版本
+          img: generatedBaseGame.img,
+          // 关键：为了让游戏能跑起来，我们需要让它调用抽取出的游戏ID对应的游戏引擎逻辑
+          // 在这个纯前端Demo中，所有同类型的游戏都调用相同的内核 (如 runActionGame)
+        };
+
+        // 5. 将新游戏保存到本地存储
+        Storage.saveLocallyGeneratedGame(newGame);
+
+        // 6. 重新渲染整个游戏列表
+        renderGames("all");
+
+        // 7. 更新状态并关闭模态框
+        statusDiv.innerText = `🎉 游戏《${newGame.title}》已成功在本地平台部署！`;
+        setTimeout(() => {
+          closeCreatorModal();
+          alert(
+            `AI Agent 成功生成游戏《${newGame.title}》！它继承了《${generatedBaseGame.title}》的玩法框架。`
+          );
+        }, 1000);
+      }
+
+      // --- 奖池数字滚动特效 (保持原逻辑) ---
+      let jackpot = 88888888;
+      setInterval(() => {
+        jackpot += Math.floor(Math.random() * 1000);
+        document.getElementById("jackpot-main").innerText =
+          jackpot.toLocaleString();
+        document.getElementById("nav-money").innerText =
+          jackpot.toLocaleString();
+      }, 100);
+
+      // 初始化：加载硬编码游戏和本地生成游戏
+      renderGames();
+    </script>
+  </body>
+</html>
